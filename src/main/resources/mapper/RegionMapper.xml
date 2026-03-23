@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.logmanagementsystem.mapper.RegionMapper">
+
+    <select id="findAllProvinces" resultType="com.itheima.logmanagementsystem.entity.Province">
+        SELECT * FROM s_province
+    </select>
+
+    <select id="findCitiesByProvinceId" resultType="com.itheima.logmanagementsystem.entity.City">
+        SELECT * FROM s_city WHERE province_id = #{provinceId}
+    </select>
+
+    <select id="findDistrictsByCityId" resultType="com.itheima.logmanagementsystem.entity.District">
+        SELECT * FROM s_district WHERE city_id = #{cityId}
+    </select>
+
+</mapper>

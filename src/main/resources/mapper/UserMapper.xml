@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.logmanagementsystem.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.itheima.logmanagementsystem.entity.User">
+        <id column="user_id" property="userId" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="real_name" property="realName" />
+        <result column="birthday" property="birthday" />
+        <result column="district_id" property="districtId" />
+        <result column="avatar_url" property="avatarUrl" />
+        <result column="phone" property="phone" />
+        <result column="email" property="email" />
+        <result column="qq" property="qq" />
+        <result column="is_admin" property="isAdmin" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id, username, password, real_name, birthday, district_id, avatar_url, phone, email, qq, is_admin, status, create_time, update_time
+    </sql>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM sys_user WHERE user_id = #{userId}
+    </select>
+
+    <select id="findByUsername" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM sys_user WHERE username = #{username}
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM sys_user
+    </select>
+
+    <select id="login" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM sys_user WHERE username = #{username} AND password = #{password}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO sys_user (username, password, real_name, birthday, district_id, avatar_url, phone, email, qq, is_admin, status, create_time, update_time)
+        VALUES (#{username}, #{password}, #{realName}, #{birthday}, #{districtId}, #{avatarUrl}, #{phone}, #{email}, #{qq}, #{isAdmin}, #{status}, NOW(), NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE sys_user
+        <set>
+            <if test="password != null">password = #{password},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="districtId != null">district_id = #{districtId},</if>
+            <if test="avatarUrl != null">avatar_url = #{avatarUrl},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="qq != null">qq = #{qq},</if>
+            <if test="isAdmin != null">is_admin = #{isAdmin},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = NOW()
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM sys_user WHERE user_id = #{userId}
+    </delete>
+
+</mapper>

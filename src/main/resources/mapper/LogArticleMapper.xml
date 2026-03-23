@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.logmanagementsystem.mapper.LogArticleMapper">
+
+    <resultMap id="BaseResultMap" type="com.itheima.logmanagementsystem.entity.LogArticle">
+        <id column="article_id" property="articleId" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="user_id" property="userId" />
+        <result column="read_count" property="readCount" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="real_name" property="authorName" />
+        <result column="avatar_url" property="authorAvatar" />
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT a.*, u.real_name, u.avatar_url
+        FROM sys_log_article a
+        LEFT JOIN sys_user u ON a.user_id = u.user_id
+        WHERE a.article_id = #{articleId}
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT a.*, u.real_name, u.avatar_url
+        FROM sys_log_article a
+        LEFT JOIN sys_user u ON a.user_id = u.user_id
+        <where>
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+        ORDER BY a.create_time DESC
+    </select>
+
+    <select id="findByUserId" resultMap="BaseResultMap">
+        SELECT a.*, u.real_name, u.avatar_url
+        FROM sys_log_article a
+        LEFT JOIN sys_user u ON a.user_id = u.user_id
+        WHERE a.user_id = #{userId}
+        ORDER BY a.create_time DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="articleId">
+        INSERT INTO sys_log_article (title, content, user_id, read_count, create_time, update_time)
+        VALUES (#{title}, #{content}, #{userId}, 0, NOW(), NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE sys_log_article
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            update_time = NOW()
+        </set>
+        WHERE article_id = #{articleId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM sys_log_article WHERE article_id = #{articleId}
+    </delete>
+
+    <update id="incrementReadCount">
+        UPDATE sys_log_article SET read_count = read_count + 1 WHERE article_id = #{articleId}
+    </update>
+
+</mapper>
