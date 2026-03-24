@@ -104,7 +104,11 @@ Spring Boot REST API (8080)
 在仓库根目录执行：
 
 ```bash
-bash mvnw spring-boot:run
+# macOS / Linux
+./mvnw spring-boot:run
+
+# Windows (PowerShell / CMD)
+mvnw.cmd spring-boot:run
 ```
 
 后端默认地址：
@@ -164,7 +168,11 @@ LogManagementSystem/
 ### 后端测试
 
 ```bash
-bash mvnw test
+# macOS / Linux
+./mvnw test
+
+# Windows (PowerShell / CMD)
+mvnw.cmd test
 ```
 
 ### 前端构建
