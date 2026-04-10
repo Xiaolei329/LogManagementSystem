@@ -3,8 +3,10 @@ package com.itheima.logmanagementsystem.entity;
 import lombok.Data;
 import java.time.LocalDateTime;
 
+import java.io.Serializable;
+
 @Data
-public class District {
+public class District implements Serializable {
     private Integer districtId;
     private String districtName;
     private Integer cityId;

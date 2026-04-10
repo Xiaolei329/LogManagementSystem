@@ -16,35 +16,31 @@
         <el-form-item label="真实姓名" prop="realName">
           <el-input v-model="form.realName" placeholder="请输入真实姓名" />
         </el-form-item>
-        <el-form-item label="所在地">
-          <el-row :gutter="10">
-            <el-col :span="8">
-              <el-select
-                v-model="selectedProvince"
-                placeholder="省"
-                @change="handleProvinceChange"
-                style="width: 100%">
-                <el-option v-for="item in provinces" :key="item.provinceId" :label="item.provinceName" :value="item.provinceId" />
-              </el-select>
-            </el-col>
-            <el-col :span="8">
-              <el-select
-                v-model="selectedCity"
-                placeholder="市"
-                @change="handleCityChange"
-                style="width: 100%">
-                <el-option v-for="item in cities" :key="item.cityId" :label="item.cityName" :value="item.cityId" />
-              </el-select>
-            </el-col>
-            <el-col :span="8">
-              <el-select
-                v-model="form.districtId"
-                placeholder="区"
-                style="width: 100%">
-                <el-option v-for="item in districts" :key="item.districtId" :label="item.districtName" :value="item.districtId" />
-              </el-select>
-            </el-col>
-          </el-row>
+        <el-form-item label="省份">
+          <el-select
+            v-model="selectedProvince"
+            placeholder="请选择省份"
+            @change="handleProvinceChange"
+            style="width: 100%">
+            <el-option v-for="item in provinces" :key="item.provinceId" :label="item.provinceName" :value="item.provinceId" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="城市" v-if="cities.length > 0">
+          <el-select
+            v-model="selectedCity"
+            placeholder="请选择城市"
+            @change="handleCityChange"
+            style="width: 100%">
+            <el-option v-for="item in cities" :key="item.cityId" :label="item.cityName" :value="item.cityId" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="区县" v-if="districts.length > 0">
+          <el-select
+            v-model="form.districtId"
+            placeholder="请选择区县"
+            style="width: 100%">
+            <el-option v-for="item in districts" :key="item.districtId" :label="item.districtName" :value="item.districtId" />
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" class="w-100" @click="handleRegister" :loading="loading">注册</el-button>
@@ -134,7 +130,6 @@ const handleRegister = async () => {
         ElMessage.success('注册成功，请等待管理员审核')
         router.push('/login')
       } catch (error) {
-        // 错误已在拦截器处理
       } finally {
         loading.value = false
       }

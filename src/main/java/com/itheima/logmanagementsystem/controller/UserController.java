@@ -16,12 +16,66 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private org.springframework.data.redis.core.StringRedisTemplate stringRedisTemplate;
+
+    @GetMapping("/captcha")
+    public Result<java.util.Map<String, String>> getCaptcha() {
+        // 创建图形验证码
+        cn.hutool.captcha.ShearCaptcha captcha = cn.hutool.captcha.CaptchaUtil.createShearCaptcha(150, 40, 4, 3);
+        String code = captcha.getCode();
+        String uuid = java.util.UUID.randomUUID().toString().replace("-", "");
+        
+        // 存入 Redis
+        stringRedisTemplate.opsForValue().set("login_captcha:" + uuid, code, 2, java.util.concurrent.TimeUnit.MINUTES);
+        
+        java.util.Map<String, String> result = new java.util.HashMap<>();
+        result.put("captchaId", uuid);
+        result.put("captchaImg", captcha.getImageBase64Data());
+        
+        return Result.success(result);
+    }
+
     @PostMapping("/login")
-    public Result<User> login(@RequestBody User user) {
+    public Result<java.util.Map<String, Object>> login(@RequestBody java.util.Map<String, String> form) {
+        String username = form.get("username");
+        String password = form.get("password");
+        String captchaCode = form.get("captchaCode");
+        String captchaId = form.get("captchaId");
+
+        if (captchaId == null || captchaCode == null || captchaCode.trim().isEmpty()) {
+            return Result.error("请输入验证码");
+        }
+        
+        // 校验验证码
+        String redisKey = "login_captcha:" + captchaId;
+        String realCode = stringRedisTemplate.opsForValue().get(redisKey);
+        
+        if (realCode == null) {
+            return Result.error("验证码已失效，请点击图片刷新");
+        }
+        if (!realCode.equalsIgnoreCase(captchaCode)) {
+            return Result.error("验证码错误");
+        }
+        
+        // 验证通过，删除缓存
+        stringRedisTemplate.delete(redisKey);
+
         try {
-            User loginUser = userService.login(user.getUsername(), user.getPassword());
+            User loginUser = userService.login(username, password);
             if (loginUser != null) {
-                return Result.success(loginUser);
+                // 生成 JWT
+                java.util.Map<String, Object> claims = new java.util.HashMap<>();
+                claims.put("userId", loginUser.getUserId());
+                claims.put("username", loginUser.getUsername());
+                String token = com.itheima.logmanagementsystem.utils.JwtUtils.generateToken(claims);
+
+                // 组装返回数据
+                java.util.Map<String, Object> data = new java.util.HashMap<>();
+                data.put("user", loginUser);
+                data.put("token", token);
+
+                return Result.success(data);
             }
             return Result.error("用户名或密码错误");
         } catch (Exception e) {

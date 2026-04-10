@@ -59,7 +59,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import request from '../utils/request' // 简单起见直接用 request，规范应封装 api/user.js
+import request from '../utils/request' 
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const userList = ref([])

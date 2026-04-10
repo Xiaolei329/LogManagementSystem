@@ -37,3 +37,10 @@ export function deleteArticle(id) {
     method: 'delete'
   })
 }
+
+export function getHotArticles() {
+  return request({
+    url: '/article/hot',
+    method: 'get'
+  })
+}

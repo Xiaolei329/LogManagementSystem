@@ -1,8 +1,0 @@
-
-
-管理员账号：admin       密码:123456
-主页：http://localhost:3000/
-
-
-主目录为Java的Springboot项目文件
-vue-frontend文件夹为VUE的前端文件

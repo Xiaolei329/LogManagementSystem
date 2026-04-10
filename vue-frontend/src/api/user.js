@@ -8,6 +8,13 @@ export function login(data) {
   })
 }
 
+export function getCaptcha() {
+  return request({
+    url: '/user/captcha',
+    method: 'get'
+  })
+}
+
 export function register(data) {
   return request({
     url: '/user/register',

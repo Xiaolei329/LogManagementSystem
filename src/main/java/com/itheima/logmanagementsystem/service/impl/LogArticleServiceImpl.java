@@ -21,6 +21,12 @@ public class LogArticleServiceImpl implements LogArticleService {
     @Autowired
     private CommentMapper commentMapper;
 
+    @Autowired
+    private com.itheima.logmanagementsystem.service.AIAssistantService aiAssistantService;
+
+    @Autowired
+    private org.springframework.data.redis.core.StringRedisTemplate stringRedisTemplate;
+
     @Override
     public PageInfo<LogArticle> getArticleList(int pageNum, int pageSize, String title) {
         PageHelper.startPage(pageNum, pageSize);
@@ -31,6 +37,11 @@ public class LogArticleServiceImpl implements LogArticleService {
     @Override
     public LogArticle getArticleDetail(Integer articleId) {
         logArticleMapper.incrementReadCount(articleId);
+        
+        //热度排行榜
+        String key = "article:hot";
+        stringRedisTemplate.opsForZSet().incrementScore(key, String.valueOf(articleId), 1);
+        
         return logArticleMapper.findById(articleId);
     }
 
@@ -38,6 +49,9 @@ public class LogArticleServiceImpl implements LogArticleService {
     @Transactional
     public void publishArticle(LogArticle article) {
         logArticleMapper.insert(article);
+        if (article.getArticleId() != null) {
+            aiAssistantService.generateAndAddComment(article);
+        }
     }
 
     @Override

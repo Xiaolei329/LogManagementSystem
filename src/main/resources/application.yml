@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/log_management_system?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/log_management_system?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
-    password: admin
+    password: your_mysql_password_here
   data:
     redis:
       host: localhost
@@ -17,9 +17,23 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.itheima.logmanagementsystem.entity
   configuration:
-    map-underscore-to-camel-case: true # 开启驼峰命名转换
+    map-underscore-to-camel-case: true
 
 pagehelper:
   helperDialect: mysql
   reasonable: true
   supportMethodsArguments: true
+
+ai:
+  # API Key
+  api-key: your_deepseek_api_key_here
+  api-url: https://api.deepseek.com/chat/completions
+  # 小助手UID
+  bot-user-id: 11
+
+  #阿里云OSS配置
+alioss:
+  endpoint: oss-cn-beijing.aliyuncs.com
+  bucket-name: your_bucket_name_here
+  access-key-id: your_access_key_id_here
+  access-key-secret: your_access_key_secret_here

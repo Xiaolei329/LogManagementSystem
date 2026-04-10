@@ -15,6 +15,12 @@ public class LogArticleController {
     @Autowired
     private LogArticleService logArticleService;
 
+    @Autowired
+    private org.springframework.data.redis.core.StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private com.itheima.logmanagementsystem.mapper.LogArticleMapper logArticleMapper;
+
     @GetMapping("/list")
     public Result<PageInfo<LogArticle>> getList(
             @RequestParam(defaultValue = "1") int pageNum,
@@ -52,5 +58,19 @@ public class LogArticleController {
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam Integer userId) {
         return Result.success(logArticleService.getMyArticles(pageNum, pageSize, userId));
+    }
+
+    @GetMapping("/hot")
+    public Result<java.util.List<LogArticle>> getHotArticles() {
+        String key = "article:hot";
+        java.util.Set<String> topIds = stringRedisTemplate.opsForZSet().reverseRange(key, 0, 9);
+        if (topIds == null || topIds.isEmpty()) return Result.success(new java.util.ArrayList<>());
+        
+        java.util.List<LogArticle> hotList = new java.util.ArrayList<>();
+        for (String idStr : topIds) {
+            LogArticle article = logArticleMapper.findById(Integer.valueOf(idStr));
+            if (article != null) hotList.add(article);
+        }
+        return Result.success(hotList);
     }
 }

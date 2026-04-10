@@ -31,14 +31,54 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { ElNotification } from 'element-plus'
 
 const router = useRouter()
 const route = useRoute()
-const user = JSON.parse(localStorage.getItem('user') || '{}')
+
+let user = {}
+try {
+  const userStr = localStorage.getItem('user')
+  user = userStr && userStr !== 'undefined' ? JSON.parse(userStr) : {}
+} catch (e) {
+  console.error("Failed to parse user from localStorage", e)
+}
 
 const activePath = computed(() => route.path)
+
+let ws = null
+
+const initWebSocket = () => {
+  if (!user || (!user.userId && !user.token)) return
+  
+  const wsUrl = `ws://localhost:8080/ws/${user.userId}`
+  ws = new WebSocket(wsUrl)
+  
+  ws.onmessage = (e) => {
+    ElNotification({
+      title: '系统通知',
+      message: e.data,
+      type: 'success',
+      duration: 6000
+    })
+  }
+
+  ws.onerror = () => {
+    console.error("WebSocket 连接遇到问题")
+  }
+}
+
+onMounted(() => {
+  initWebSocket()
+})
+
+onUnmounted(() => {
+  if (ws) {
+    ws.close()
+  }
+})
 
 const handleCommand = (command) => {
   if (command === 'logout') {

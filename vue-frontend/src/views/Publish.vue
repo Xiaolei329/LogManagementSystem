@@ -19,7 +19,8 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSubmit" :loading="loading">发布</el-button>
+          <el-button type="primary" @click="handleSubmit" :loading="loading" round>发布</el-button>
+          <el-button color="#f5f5f7" @click="handlePolish" :loading="aiLoading" style="color: #1d1d1f;" round>✨ 一键极简润色</el-button>
           <el-button @click="$router.back()">取消</el-button>
         </el-form-item>
       </el-form>
@@ -31,12 +32,19 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { publishArticle } from '../api/article'
+import { polishArticleContent } from '../api/ai'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const formRef = ref(null)
 const loading = ref(false)
-const user = JSON.parse(localStorage.getItem('user') || '{}')
+const aiLoading = ref(false)
+
+let user = {}
+try {
+  const userStr = localStorage.getItem('user')
+  user = userStr && userStr !== 'undefined' ? JSON.parse(userStr) : {}
+} catch (e) {}
 
 const form = reactive({
   title: '',
@@ -64,11 +72,52 @@ const handleSubmit = async () => {
     }
   })
 }
+
+const handlePolish = async () => {
+  if (!form.content.trim()) {
+    ElMessage.warning('请先输入需要润色的日志内容')
+    return
+  }
+  aiLoading.value = true
+  try {
+    const res = await polishArticleContent(form.content)
+    if(res.code === 200) { 
+      form.content = res.data
+      ElMessage.success('润色成功！')
+    } else {
+      ElMessage.error(res.msg || '润色失败')
+    }
+  } catch (error) {
+    console.error(error)
+  } finally {
+    aiLoading.value = false
+  }
+}
 </script>
 
 <style scoped>
 .publish-container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+.card-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+:deep(.el-input__wrapper),
+:deep(.el-textarea__inner) {
+  border-radius: 12px;
+  background-color: #f5f5f7;
+  border: none;
+  box-shadow: none;
+  padding: 12px 16px;
+}
+:deep(.el-input__wrapper.is-focus),
+:deep(.el-textarea__inner:focus) {
+  background-color: #fff;
+  box-shadow: 0 0 0 2px var(--el-color-primary);
 }
 </style>

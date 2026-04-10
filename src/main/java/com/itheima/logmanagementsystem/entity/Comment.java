@@ -13,7 +13,6 @@ public class Comment {
     private Integer parentId;
     private LocalDateTime createTime;
 
-    // 业务扩展字段
     private String userName; // 评论人姓名
     private String userAvatar; // 评论人头像
     private List<Comment> replies; // 回复列表

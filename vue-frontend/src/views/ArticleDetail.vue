@@ -53,9 +53,9 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getArticleDetail } from '../api/article'
-import { getComments, addComment } from '../api/comment' // 假设你会在 api/comment.js 中创建这些方法
+import { getComments, addComment } from '../api/comment' 
 import { ElMessage } from 'element-plus'
-import request from '../utils/request' // 临时直接用 request
+import request from '../utils/request' 
 
 const route = useRoute()
 const articleId = route.params.id
@@ -63,7 +63,12 @@ const loading = ref(false)
 const article = ref(null)
 const comments = ref([])
 const newComment = ref('')
-const user = JSON.parse(localStorage.getItem('user') || '{}')
+
+let user = {}
+try {
+  const userStr = localStorage.getItem('user')
+  user = userStr && userStr !== 'undefined' ? JSON.parse(userStr) : {}
+} catch (e) {}
 
 const fetchDetail = async () => {
   loading.value = true
@@ -109,48 +114,78 @@ onMounted(() => {
 <style scoped>
 .detail-container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 40px auto;
+  padding: 0 20px;
 }
 .article-header {
   text-align: center;
+  margin-bottom: 30px;
+}
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+  color: var(--el-text-color-primary);
 }
 .meta {
-  color: #909399;
-  font-size: 13px;
-  margin-top: 10px;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
 }
 .ml-3 {
-  margin-left: 20px;
+  margin-left: 24px;
 }
 .article-content {
   font-size: 16px;
   line-height: 1.8;
-  padding: 20px 0;
+  padding: 30px 0;
   white-space: pre-wrap;
+  color: var(--el-text-color-primary);
 }
 .comment-section {
-  margin-top: 20px;
+  margin-top: 40px;
+  border-radius: 16px;
+}
+.card-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+.comment-input {
+  margin-bottom: 30px;
+}
+:deep(.el-textarea__inner) {
+  border-radius: 12px;
+  padding: 12px;
+  background-color: #f5f5f7;
+  border: none;
+  box-shadow: none;
+}
+:deep(.el-textarea__inner:focus) {
+  background-color: #fff;
+  box-shadow: 0 0 0 2px var(--el-color-primary);
 }
 .btn-wrapper {
   text-align: right;
-  margin-top: 10px;
+  margin-top: 16px;
 }
 .comment-item {
-  padding: 10px 0;
+  padding: 16px 0;
 }
 .comment-user {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  color: #909399;
-  margin-bottom: 5px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 8px;
 }
 .username {
-  color: #303133;
-  font-weight: bold;
+  color: var(--el-text-color-primary);
+  font-weight: 600;
 }
 .comment-content {
-  font-size: 14px;
-  color: #606266;
+  font-size: 15px;
+  color: var(--el-text-color-primary);
+  line-height: 1.5;
 }
 </style>

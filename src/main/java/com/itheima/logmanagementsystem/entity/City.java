@@ -4,8 +4,10 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 
+import java.io.Serializable;
+
 @Data
-public class City {
+public class City implements Serializable {
     private Integer cityId;
     private String cityName;
     private String zipCode;

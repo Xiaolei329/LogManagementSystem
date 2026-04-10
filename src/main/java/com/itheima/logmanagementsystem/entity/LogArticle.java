@@ -12,8 +12,7 @@ public class LogArticle {
     private Integer readCount;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    
-    // 业务扩展字段
+
     private String authorName; // 作者姓名
     private String authorAvatar; // 作者头像
 }
